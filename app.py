@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 from datetime import datetime
 import os
@@ -25,7 +26,6 @@ def login():
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
-    # Wenn Datei nicht existiert, erstelle sie leer
     if not os.path.exists(LOG_FILE):
         with open(LOG_FILE, "w") as f:
             f.write("")
@@ -45,4 +45,18 @@ def admin():
             content = "<br>".join(
                 line.strip().replace("<", "&lt;").replace(">", "&gt;") for line in logs
             )
-            return f"
+            return f"<h3>Login-Daten:</h3><div style='font-family: monospace'>{content}</div>"
+
+        except Exception as e:
+            return f"<h3>Fehler beim Lesen der Datei: {str(e)}</h3>"
+
+    return '''
+        <h2>🔐 Admin-Bereich</h2>
+        <form method="POST">
+            <input type="password" name="password" placeholder="Passwort" required>
+            <button type="submit">Login</button>
+        </form>
+    '''
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
