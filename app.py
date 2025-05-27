@@ -41,9 +41,16 @@ def admin():
             <button type="submit">Login</button>
         </form>
     '''
-@app.route("/", methods=["GET"])
-def home():
-    return render_template("index.html")
+
+
+    # Passwortformular anzeigen
+    return '''
+        <h2>🔐 Admin-Bereich</h2>
+        <form method="POST">
+            <input type="password" name="password" placeholder="Passwort" required>
+            <button type="submit">Login</button>
+        </form>
+    '''
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
