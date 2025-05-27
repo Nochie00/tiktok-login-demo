@@ -1,11 +1,6 @@
-from flask import Flask, render_template, request
-from datetime import datetime
-import os
-
-app = Flask(__name__)
-
 LOG_FILE = "log.txt"
-ADMIN_PASSWORD = "6067"  # Passwort für Admin-Zugang
+if not os.path.exists(LOG_FILE):
+    open(LOG_FILE, "w").close()
 
 @app.route("/", methods=["GET", "POST"])
 def home():
