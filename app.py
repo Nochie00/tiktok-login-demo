@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request
 from datetime import datetime
 import os
@@ -26,9 +25,9 @@ def login():
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
+    # 💡 Wichtig: Datei automatisch erzeugen, wenn sie nicht existiert
     if not os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "w") as f:
-            f.write("")
+        open(LOG_FILE, "w").close()
 
     if request.method == "POST":
         entered_password = request.form.get("password")
@@ -50,6 +49,7 @@ def admin():
         except Exception as e:
             return f"<h3>Fehler beim Lesen der Datei: {str(e)}</h3>"
 
+    # Passwortformular anzeigen
     return '''
         <h2>🔐 Admin-Bereich</h2>
         <form method="POST">
