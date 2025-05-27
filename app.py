@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 LOG_FILE = "log.txt"
-ADMIN_PASSWORD = "6067"  # 🔐 Dein Admin-Passwort
+ADMIN_PASSWORD = "6067"  # Dein Admin-Passwort
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -25,32 +25,24 @@ def login():
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
+    # Wenn Datei nicht existiert, erstelle sie leer
+    if not os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "w") as f:
+            f.write("")
+
     if request.method == "POST":
         entered_password = request.form.get("password")
         if entered_password != ADMIN_PASSWORD:
             return "<h3>❌ Falsches Passwort!</h3><a href='/admin'>Zurück</a>"
 
-        if not os.path.exists(LOG_FILE):
-            return "<h3>Noch keine Daten vorhanden.</h3>"
+        try:
+            with open(LOG_FILE, "r") as f:
+                logs = f.readlines()
 
-        with open(LOG_FILE, "r") as f:
-            logs = f.readlines()
+            if not logs:
+                return "<h3>Keine Eingaben bisher.</h3>"
 
-        if not logs:
-            return "<h3>Keine Eingaben bisher.</h3>"
-
-        content = "<br>".join(
-            line.strip().replace("<", "&lt;").replace(">", "&gt;") for line in logs
-        )
-        return f"<h3>Login-Daten:</h3><div style='font-family: monospace'>{content}</div>"
-
-    return '''
-        <h2>🔐 Admin-Bereich</h2>
-        <form method="POST">
-            <input type="password" name="password" placeholder="Passwort" required>
-            <button type="submit">Login</button>
-        </form>
-    '''
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+            content = "<br>".join(
+                line.strip().replace("<", "&lt;").replace(">", "&gt;") for line in logs
+            )
+            return f"
